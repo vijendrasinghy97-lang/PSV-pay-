@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#5425a8">
+<title>PSV Pay</title>
+  <link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f5fa;color:#202033;font-family:Arial,sans-serif}
+header{background:linear-gradient(120deg,#47218d,#7544d4);color:white;padding:20px;border-radius:0 0 25px 25px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:27px;font-weight:bold}
+.logo span{color:#ffd65a}
+.profile{background:#ffffff30;padding:12px;border-radius:50%;font-size:22px}
+.welcome{margin-top:24px}
+.welcome h2{margin:5px 0}
+main{padding:15px;max-width:600px;margin:auto;padding-bottom:90px}
+.card{background:white;border-radius:17px;padding:17px;margin-bottom:15px;box-shadow:0 3px 12px #25204b0c}
+.balance{background:linear-gradient(120deg,#5425a8,#8256df);color:white}
+.balance h1{font-size:31px;margin:12px 0}
+.balance button{background:#ffffff25;color:white;border:1px solid #ffffff60;padding:10px 16px;border-radius:9px}
+.section-title{font-size:17px;font-weight:bold;margin-bottom:15px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px 8px}
+.action{border:0;background:white;text-align:center;color:#333;font-size:13px;padding:5px}
+.circle{width:52px;height:52px;border-radius:17px;background:#f0e9ff;display:grid;place-items:center;margin:0 auto 8px;font-size:24px}
+.action:active{transform:scale(.96)}
+.promo{background:linear-gradient(110deg,#e9dcff,#f5efff);border-radius:15px;padding:18px;color:#45218c}
+input,select{width:100%;padding:14px;margin:8px 0;border:1px solid #ddd;border-radius:10px;font-size:15px}
+.primary{background:#5d2caa;color:white;border:0;border-radius:10px;padding:14px;width:100%;font-size:16px}
+.secondary{background:#eee7fa;color:#5425a8;border:0;padding:12px;border-radius:9px}
+.row{display:flex;justify-content:space-between;align-items:center}
+.history{padding:12px 0;border-bottom:1px solid #eee;font-size:14px}
+#panel{display:none}
+nav{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:space-around;padding:12px 4px;box-shadow:0 -3px 15px #ddd;z-index:5}
+nav button{border:0;background:white;color:#777;font-size:12px}
+nav button b{display:block;font-size:21px;margin-bottom:4px}
+.active{color:#5927a8}
+small{color:inherit}
+</style>
+</head>
+<body>
+
+<header>
+<div class="top">
+<div class="logo">PSV <span>Pay</span></div>
+<div class="profile">👤</div>
+</div>
+<div class="welcome">
+<small>आपका स्वागत है</small>
+<h2>नमस्ते! 👋</h2>
+<p>आपकी डिजिटल पेमेंट दुनिया</p>
+</div>
+</header>
+
+<main>
+
+<div class="card balance">
+<div class="row">
+<span>Demo Wallet Balance</span>
+<span>👁️</span>
+</div>
+<h1 id="balance">₹5,000.00</h1>
+<small>यह केवल परीक्षण बैलेंस है</small>
+</div>
+
+<div class="card">
+<div class="section-title">Money Transfer</div>
+<div class="grid">
+<button class="action" onclick="openPage('send')"><div class="circle">📱</div>To Mobile</button>
+<button class="action" onclick="openPage('qr')"><div class="circle">▦</div>Scan QR</button>
+<button class="action" onclick="openPage('bank')"><div class="circle">🏦</div>Bank Transfer</button>
+</div>
+</div>
+
+<div class="card">
+<div class="section-title">Recharge & Bills</div>
+<div class="grid">
+<button class="action" onclick="openPage('recharge')"><div class="circle">📲</div>Mobile Recharge</button>
+<button class="action" onclick="openPage('electricity')"><div class="circle">💡</div>Electricity</button>
+<button class="action" onclick="openPage('water')"><div class="circle">💧</div>Water Bill</button>
+<button class="action" onclick="openPage('dth')"><div class="circle">📺</div>DTH</button>
+<button class="action" onclick="openPage('gas')"><div class="circle">🔥</div>Gas Bill</button>
+<button class="action" onclick="openPage('history')"><div class="circle">📜</div>History</button>
+</div>
+</div>
+
+<div class="promo">
+<b>PSV Pay Rewards 🎁</b>
+<p>आपके लिए डिजिटल पेमेंट का नया अनुभव।</p>
+</div>
+
+<div class="card" id="panel">
+<div class="section-title">PSV Pay Services</div>
+<p>ऊपर किसी सुविधा को चुनें।</p>
+</div>
+
+<div class="card">
+<div class="section-title">Recent Transactions</div>
+<div id="historyList">अभी कोई Demo Transaction नहीं है।</div>
+</div>
+
+<div class="card">
+<div class="section-title">My Account</div>
+<button class="secondary" onclick="openPage('profile')">👤 My Profile</button>
+<button class="secondary" onclick="openPage('settings')">⚙️ Settings</button>
+</div>
+
+</main>
+
+<nav>
+<button class="active" onclick="home()"><b>⌂</b>Home</button>
+<button onclick="openPage('qr')"><b>▦</b>Scan</button>
+<button onclick="openPage('history')"><b>◷</b>History</button>
+<button onclick="openPage('profile')"><b>♙</b>Profile</button>
+</nav>
+
+<script>
+let transactions=[];
+
+function openPage(type){
+let p=document.getElementById('panel');
+p.style.display='block';
+
+let pages={
+send:`<h3>📱 Send Money Demo</h3>
+<input id="mobile" maxlength="10" placeholder="मोबाइल नंबर">
+<input id="amount" type="number" placeholder="रकम ₹">
+<button class="primary" onclick="transfer()">Continue Demo</button>`,
+
+qr:`<h3>▦ QR Scanner Demo</h3>
+<p>यह केवल डेमो स्क्रीन है। वास्तविक QR स्कैनिंग अभी उपलब्ध नहीं है।</p>`,
+
+bank:`<h3>🏦 Bank Transfer Demo</h3>
+<input placeholder="खाता धारक का नाम">
+<input placeholder="खाता नंबर">
+<input placeholder="IFSC Code">
+<button class="primary" onclick="demo()">Continue Demo</button>`,
+
+recharge:`<h3>📲 Mobile Recharge Demo</h3>
+<input placeholder="मोबाइल नंबर">
+<select><option>Operator चुनें</option><option>Jio</option><option>Airtel</option><option>Vi</option><option>BSNL</option></select>
+<input type="number" placeholder="Recharge Amount">
+<button class="primary" onclick="demo()">Recharge Demo</button>`,
+
+electricity:`<h3>💡 Electricity Bill Demo</h3>
+<input placeholder="Consumer Number">
+<input type="number" placeholder="Amount">
+<button class="primary" onclick="demo()">Pay Demo</button>`,
+
+water:`<h3>💧 Water Bill Demo</h3><input placeholder="Consumer Number"><button class="primary" onclick="demo()">Continue</button>`,
+
+dth:`<h3>📺 DTH Recharge Demo</h3><input placeholder="Customer ID"><input type="number" placeholder="Amount"><button class="primary" onclick="demo()">Continue</button>`,
+
+gas:`<h3>🔥 Gas Bill Demo</h3><input placeholder="Consumer Number"><button class="primary" onclick="demo()">Continue</button>`,
+
+history:`<h3>📜 Transaction History</h3><div id="allHistory"></div>`,
+
+profile:`<h3>👤 My Profile</h3><input placeholder="आपका नाम"><input placeholder="मोबाइल नंबर"><p>PSV Pay Demo Account</p>`,
+
+settings:`<h3>⚙️ Settings</h3><p>भाषा: हिन्दी</p><p>ऐप: PSV Pay Demo</p>`
+};
+
+p.innerHTML=pages[type]||'<h3>PSV Pay</h3>';
+p.scrollIntoView({behavior:'smooth'});
+if(type==='history') updateHistory();
+}
+
+function transfer(){
+let mobile=document.getElementById('mobile').value;
+let amount=Number(document.getElementById('amount').value);
+
+if(!/^[0-9]{10}$/.test(mobile)||amount<=0){
+alert('सही मोबाइल नंबर और रकम डालें');
+return;
+}
+
+alert('यह केवल Demo है। कोई असली पैसा नहीं भेजा गया।');
+
+transactions.unshift({
+name:'Demo Mobile Transfer',
+mobile:mobile,
+amount:amount
+});
+updateHistory();
+}
+
+function updateHistory(){
+let html=transactions.map(t=>
+'<div class="history">📱 '+t.name+
+'<br>'+t.mobile+'<br>₹'+t.amount.toFixed(2)+'</div>'
+).join('');
+
+document.getElementById('historyList').innerHTML=
+html||'अभी कोई Demo Transaction नहीं है।';
+
+let all=document.getElementById('allHistory');
+if(all) all.innerHTML=html||'कोई रिकॉर्ड नहीं है।';
+}
+
+function demo(){
+alert('यह केवल Demo सुविधा है। असली भुगतान नहीं हुआ।');
+}
+
+function home(){
+document.getElementById('panel').style.display='none';
+window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("PSV Pay Ready"))
+      .catch(error => console.log(error));
+  });
+}
+</script>
+</body>
+</html>
